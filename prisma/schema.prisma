@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+enum WorkspaceRole {
+  owner
+  editor
+  viewer
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+}
+model Workspace {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  ownerId  String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  members   WorkspaceMember[]
+  boards    Board[]
+  inviteLinks InviteLink[] 
+  @@map("workspaces")
+}
+model WorkspaceMember {
+  id          String        @id @default(uuid()) @db.Uuid
+  workspaceId String        @db.Uuid
+  userId      String        @db.Uuid
+  role        WorkspaceRole
+  joinedAt    DateTime      @default(now())
+
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@map("workspace_members")
+}
+model Board {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  name        String
+  createdAt  DateTime  @default(now())
+
+  workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  columns    Column[]
+  tasks      Task[]
+
+  @@map("boards")
+}
+
+model Column {
+  id         String   @id @default(uuid()) @db.Uuid
+  boardId    String   @db.Uuid
+  name       String
+  orderIndex Int
+  createdAt DateTime @default(now())
+
+  board      Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  tasks      Task[]
+
+  @@unique([boardId, orderIndex])
+  @@map("columns")
+}
+
+model Task {
+  id           String        @id @default(uuid()) @db.Uuid
+
+  boardId      String        @db.Uuid
+  columnId     String        @db.Uuid
+
+  title        String
+  description  String?
+
+  orderIndex   Int
+
+  priority     TaskPriority @default(medium)
+
+  assigneeId   String?       @db.Uuid
+  createdBy   String        @db.Uuid
+
+  dueDate      DateTime?
+  startDate    DateTime?
+
+  completedAt DateTime?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  board        Board         @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  column       Column        @relation(fields: [columnId], references: [id], onDelete: Cascade)
+
+  @@index([boardId])
+  @@index([columnId])
+  @@index([assigneeId])
+  @@index([priority])
+  @@index([completedAt])
+  @@map("tasks")
+}
+model InviteLink {
+  id          String        @id @default(uuid()) @db.Uuid
+  workspaceId String        @db.Uuid
+  token       String        @unique
+  role        WorkspaceRole
+  expiresAt  DateTime?
+  createdAt DateTime      @default(now())
+
+  workspace  Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("invite_links")
+}
