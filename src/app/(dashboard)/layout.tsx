@@ -12,9 +12,6 @@ export default function DashboardLayout({
 
       <main className="flex-1 p-6">
         {/* mobile toggle */}
-        <div className="mb-4">
-          <SidebarTrigger />
-        </div>
 
         {children}
       </main>

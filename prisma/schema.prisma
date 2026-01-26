@@ -18,12 +18,13 @@ enum WorkspaceRole {
   viewer
 }
 
-enum TaskPriority {
+enum  TaskPriority {
   low
   medium
   high
 }
 model Workspace {
+  
   id        String   @id @default(uuid()) @db.Uuid
   name      String
   ownerId  String   @db.Uuid
@@ -51,11 +52,9 @@ model Board {
   workspaceId String    @db.Uuid
   name        String
   createdAt  DateTime  @default(now())
-
   workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   columns    Column[]
   tasks      Task[]
-
   @@map("boards")
 }
 
