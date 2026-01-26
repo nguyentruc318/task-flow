@@ -26,7 +26,6 @@ export default function ColumnCard({
           ))}
         </div>
       </SortableContext>
-
       <CreateTaskInline columnId={column.id} boardId={boardId} />
     </div>
   );

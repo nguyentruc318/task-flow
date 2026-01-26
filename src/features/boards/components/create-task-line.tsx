@@ -48,13 +48,15 @@ export default function CreateTaskInline({
         variant="ghost"
         size="sm"
         className="mt-2 justify-start"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true);
+        }}
       >
         + Add task
       </Button>
     );
   }
-  console.log(errors);
+
   return (
     <div className="mt-2 space-y-2">
       <form

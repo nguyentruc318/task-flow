@@ -12,6 +12,7 @@ export default function SortableTaskCard({ task }: { task: Task }) {
       data: {
         type: "TASK",
         columnId: task.columnId,
+        boardId: task.boardId,
       },
     });
 
