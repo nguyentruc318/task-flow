@@ -56,7 +56,6 @@ export default function BoardColumns({
       setActiveTask(active.data.current.task);
     }
   }
-  // 🔹 DIFFERENT COLUMN (làm sau)
 
   return (
     <DndContext
